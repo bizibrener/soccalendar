@@ -1,7 +1,5 @@
 # soccalander
 
-
-
 ## 📁 Suggested File Structure
 
 ```
