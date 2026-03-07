@@ -3,23 +3,22 @@ import datetime
 from typing import List, Dict
 from config import API_KEY, BASE_URL, CALENDAR_DAYS_AHEAD, CALENDAR_DAYS_BEHIND
 
-TEAM_RANKINGS = {
-    "FC Barcelona": 4,
-    "Real Madrid CF": 4,
-    "Atlético de Madrid": 2,
-    "Arsenal FC": 3,
-    "Manchester City FC": 3,
-    "Liverpool FC": 3,
-    "FC Bayern München": 3,
-    "Chelsea FC": 2,
-    "Borussia Dortmund": 2,
-    "Tottenham Hotspur FC": 2,
-    "Manchester United FC": 1,
-    "AC Milan": 2,
-    "Juventus FC": 2,
+BIG_TEAMS = {
+    "FC Barcelona",
+    "Real Madrid CF",
+    "Atlético de Madrid",
+    "Manchester City FC",
+    "Manchester United FC",
+    "Chelsea FC",
+    "Arsenal FC",
+    "Liverpool FC",
+    "FC Bayern München",
+    "Borussia Dortmund",
+    "AC Milan",
+    "FC Internazionale Milano",
+    "Juventus FC",
+    "Paris Saint-Germain FC",
 }
-
-RANK_THRESHOLD = 4
 
 
 MAX_API_RANGE_DAYS = 10
@@ -63,12 +62,7 @@ def fetch_important_matches() -> List[Dict]:
         if not utc_date:
             continue
 
-        home_rank = TEAM_RANKINGS.get(home, 0)
-        away_rank = TEAM_RANKINGS.get(away, 0)
-
-        if home_rank == 0 and away_rank == 0:
-            continue
-        if home_rank + away_rank < RANK_THRESHOLD:
+        if home not in BIG_TEAMS or away not in BIG_TEAMS:
             continue
 
         start_time = datetime.datetime.fromisoformat(

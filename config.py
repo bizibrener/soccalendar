@@ -228,9 +228,9 @@ FEATURED = {
         "competition_code": "CL",
         "subtitle": "For Champions League lovers",
     },
-    "important-games": {
-        "name": "Important Games",
-        "slug": "important-games",
+    "big-games": {
+        "name": "Big Games",
+        "slug": "big-games",
         "crest": "https://img.icons8.com/color/512/trophy.png",
         "provider": "important",
         "subtitle": "For those who just love soccer",

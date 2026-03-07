@@ -204,7 +204,7 @@
             background: linear-gradient(135deg, #0d1b2a 0%, #1a3a6b 100%);
         }
 
-        .important-games .bg {
+        .big-games .bg {
             background: linear-gradient(135deg, #d4af37 0%, #1a1a2e 100%);
         }
 
@@ -578,6 +578,74 @@
             color: #4a5568;
             font-size: 0.85rem;
         }
+
+        /* --- SEARCH BAR --- */
+        .search-bar {
+            max-width: 500px;
+            margin: 20px auto 0;
+            padding: 0 24px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 14px 20px 14px 46px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            color: #e0e6ed;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .search-bar input:focus {
+            border-color: rgba(67, 233, 123, 0.4);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .search-bar input::placeholder {
+            color: #4a5568;
+        }
+
+        .search-bar .search-icon {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            pointer-events: none;
+        }
+
+        .search-bar .search-clear {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #5a6478;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 4px;
+            display: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .search-bar .search-clear.visible {
+            display: block;
+        }
+
+        .search-no-results {
+            text-align: center;
+            color: #4a5568;
+            font-size: 0.95rem;
+            padding: 40px 20px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -588,10 +656,21 @@
         <p>Subscribe to your favorite team's match calendar. Never miss a game again.</p>
     </header>
 
+    <div class="search-bar">
+        <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="#4a5568" stroke-width="2" stroke-linecap="round">
+            <circle cx="8.5" cy="8.5" r="6"/>
+            <line x1="13" y1="13" x2="18" y2="18"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Search teams or leagues..." autocomplete="off" />
+        <button class="search-clear" id="search-clear">✕</button>
+    </div>
+
+    <div class="search-no-results" id="search-no-results">No results found</div>
+
     <!-- FEATURED -->
     <div class="card-grid">
         {% for slug, cal in featured.items() %}
-        <div class="card-wrap" data-slug="{{ slug }}">
+        <div class="card-wrap searchable" data-slug="{{ slug }}" data-name="{{ cal.name|lower }} {{ slug }}">
             <a class="card featured-card {{ slug }}" href="/team/{{ slug }}">
                 <div class="bg"></div>
                 <img class="crest" src="{{ cal.crest }}" alt="{{ cal.name }}">
@@ -613,7 +692,7 @@
     <div class="collapsible" id="leagues-section">
         <div class="card-grid">
             {% for slug, league in leagues.items() %}
-            <div class="card-wrap" data-slug="{{ slug }}">
+            <div class="card-wrap searchable" data-slug="{{ slug }}" data-name="{{ league.name|lower }} {{ slug }}">
                 <a class="card league-card {{ slug }}" href="/team/{{ slug }}">
                     <div class="flag-bg"></div>
                     <div class="bg"></div>
@@ -644,7 +723,7 @@
 
         <div class="card-grid" id="teams-grid">
             {% for slug, team in teams.items() %}
-            <div class="card-wrap team-filter-wrap {{ slug }}" data-slug="{{ slug }}" data-league="{{ team.league }}">
+            <div class="card-wrap searchable team-filter-wrap {{ slug }}" data-slug="{{ slug }}" data-league="{{ team.league }}" data-name="{{ team.name|lower }} {{ slug }}">
                 <a class="card {{ slug }}" href="/team/{{ slug }}">
                     <div class="bg"></div>
                     <img class="crest" src="{{ team.crest }}" alt="{{ team.name }}">
@@ -673,6 +752,65 @@
     </footer>
 
     <script>
+        /* --- Search --- */
+        const searchInput = document.getElementById('search-input');
+        const searchClear = document.getElementById('search-clear');
+        const noResults = document.getElementById('search-no-results');
+        const allSearchable = document.querySelectorAll('.searchable');
+        const sectionHeaders = document.querySelectorAll('.section-header');
+        const collapsibles = document.querySelectorAll('.collapsible');
+        const filterBar = document.querySelector('.filter-bar');
+        const howTo = document.querySelector('.how-to');
+
+        let searchActive = false;
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.toLowerCase().trim();
+            searchClear.classList.toggle('visible', q.length > 0);
+
+            if (q.length === 0) {
+                searchActive = false;
+                allSearchable.forEach(el => el.style.display = '');
+                sectionHeaders.forEach(el => el.style.display = '');
+                collapsibles.forEach(el => {
+                    el.style.maxHeight = '';
+                    el.style.opacity = '';
+                    el.style.overflow = '';
+                });
+                if (filterBar) filterBar.style.display = '';
+                if (howTo) howTo.style.display = '';
+                noResults.style.display = 'none';
+                return;
+            }
+
+            searchActive = true;
+            sectionHeaders.forEach(el => el.style.display = 'none');
+            if (filterBar) filterBar.style.display = 'none';
+            if (howTo) howTo.style.display = 'none';
+
+            collapsibles.forEach(el => {
+                el.style.maxHeight = '9999px';
+                el.style.opacity = '1';
+                el.style.overflow = 'visible';
+            });
+
+            let visible = 0;
+            allSearchable.forEach(el => {
+                const name = el.dataset.name || '';
+                const match = name.includes(q);
+                el.style.display = match ? '' : 'none';
+                if (match) visible++;
+            });
+
+            noResults.style.display = visible === 0 ? 'block' : 'none';
+        });
+
+        searchClear.addEventListener('click', () => {
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+            searchInput.focus();
+        });
+
         document.querySelectorAll('.section-header').forEach(header => {
             header.addEventListener('click', () => {
                 const targetId = header.dataset.target;
