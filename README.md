@@ -1,4 +1,4 @@
-# soccalander
+# soccalendar
 
 ## 📁 Suggested File Structure
 
