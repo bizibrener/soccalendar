@@ -1,13 +1,9 @@
 from flask import Flask, Response, render_template, request
-from providers.barcelona import fetch_barcelona_matches
+from providers.fetch_matches import fetch_team_matches
 from ics_generator import generate_ics
 from config import TEAMS
 
 app = Flask(__name__)
-
-PROVIDERS = {
-    "barcelona": fetch_barcelona_matches,
-}
 
 
 @app.route("/")
@@ -17,7 +13,7 @@ def index():
 
 @app.route("/team/<team_slug>")
 def team_page(team_slug):
-    if team_slug not in PROVIDERS:
+    if team_slug not in TEAMS:
         return "Team not found", 404
 
     team = TEAMS[team_slug]
@@ -31,11 +27,11 @@ def team_page(team_slug):
 
 @app.route("/calendar/<team_slug>")
 def team_calendar(team_slug):
-    if team_slug not in PROVIDERS:
+    if team_slug not in TEAMS:
         return "Team not found", 404
 
     team = TEAMS[team_slug]
-    matches = PROVIDERS[team_slug]()
+    matches = fetch_team_matches(team_slug)
     ics_content = generate_ics(matches, team["name"])
 
     return Response(ics_content, mimetype="text/calendar")

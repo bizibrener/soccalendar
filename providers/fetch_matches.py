@@ -4,8 +4,8 @@ from typing import List, Dict
 from config import API_KEY, BASE_URL, TEAMS, CALENDAR_DAYS_AHEAD
 
 
-def fetch_barcelona_matches() -> List[Dict]:
-    team = TEAMS["barcelona"]
+def fetch_team_matches(team_slug: str) -> List[Dict]:
+    team = TEAMS[team_slug]
     url = f"{BASE_URL}/teams/{team['id']}/matches"
 
     today = datetime.date.today()
@@ -23,7 +23,7 @@ def fetch_barcelona_matches() -> List[Dict]:
         response.raise_for_status()
         data = response.json()
     except requests.RequestException as e:
-        print(f"Error fetching Barcelona matches: {e}")
+        print(f"Error fetching {team['name']} matches: {e}")
         return []
 
     matches = []
