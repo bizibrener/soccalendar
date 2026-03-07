@@ -32,6 +32,19 @@ TEAMS = {
         "slug": "manchester-city",
         "crest": "https://crests.football-data.org/65.png",
     },
+    "champions-league": {
+        "name": "Champions League",
+        "slug": "champions-league",
+        "crest": "https://crests.football-data.org/CL.png",
+        "provider": "competition",
+        "competition_code": "CL",
+    },
+    "important-games": {
+        "name": "Important Games",
+        "slug": "important-games",
+        "crest": "https://img.icons8.com/color/512/trophy.png",
+        "provider": "important",
+    },
 }
 
 MATCH_DURATION_HOURS = 2

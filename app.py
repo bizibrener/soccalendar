@@ -1,9 +1,23 @@
 from flask import Flask, Response, render_template, request
 from providers.fetch_matches import fetch_team_matches
+from providers.fetch_important import fetch_important_matches
+from providers.fetch_competition import fetch_competition_matches
 from ics_generator import generate_ics
 from config import TEAMS
 
 app = Flask(__name__)
+
+
+def get_matches(team_slug):
+    team = TEAMS[team_slug]
+    provider = team.get("provider", "team")
+
+    if provider == "important":
+        return fetch_important_matches()
+    elif provider == "competition":
+        return fetch_competition_matches(team["competition_code"])
+    else:
+        return fetch_team_matches(team_slug)
 
 
 @app.route("/")
@@ -31,7 +45,7 @@ def team_calendar(team_slug):
         return "Team not found", 404
 
     team = TEAMS[team_slug]
-    matches = fetch_team_matches(team_slug)
+    matches = get_matches(team_slug)
     ics_content = generate_ics(matches, team["name"])
 
     return Response(ics_content, mimetype="text/calendar")
