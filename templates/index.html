@@ -143,12 +143,93 @@
             background: linear-gradient(135deg, #6cabdd 0%, #1c2c5b 100%);
         }
 
+        .arsenal .bg {
+            background: linear-gradient(135deg, #db0007 0%, #063672 100%);
+        }
+
         .champions-league .bg {
             background: linear-gradient(135deg, #0d1b2a 0%, #1a3a6b 100%);
         }
 
         .important-games .bg {
             background: linear-gradient(135deg, #d4af37 0%, #1a1a2e 100%);
+        }
+
+        .section-title {
+            max-width: 900px;
+            margin: 40px auto 0;
+            padding: 0 24px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #cbd5e0;
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 900px;
+            margin: 20px auto 0;
+            padding: 0 24px;
+        }
+
+        .featured-card {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            text-decoration: none;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .featured-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .featured-card .bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .featured-card .crest {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 130px;
+            height: 130px;
+            opacity: 0.15;
+            object-fit: contain;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .featured-card .info {
+            position: relative;
+            z-index: 2;
+            padding: 20px 24px;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+        }
+
+        .featured-card .team-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .featured-card .subtitle {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 4px;
+            font-style: italic;
         }
 
         footer {
@@ -212,6 +293,21 @@
         <h1>Soccalendar</h1>
         <p>Subscribe to your favorite team's match calendar. Never miss a game again.</p>
     </header>
+
+    <div class="featured-grid">
+        {% for slug, cal in featured.items() %}
+        <a class="featured-card {{ slug }}" href="/team/{{ slug }}">
+            <div class="bg"></div>
+            <img class="crest" src="{{ cal.crest }}" alt="{{ cal.name }}">
+            <div class="info">
+                <div class="team-name">{{ cal.name }}</div>
+                <div class="subtitle">{{ cal.subtitle }}</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <h2 class="section-title">Teams</h2>
 
     <div class="teams-grid">
         {% for slug, team in teams.items() %}

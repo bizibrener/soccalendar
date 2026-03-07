@@ -32,18 +32,29 @@ TEAMS = {
         "slug": "manchester-city",
         "crest": "https://crests.football-data.org/65.png",
     },
+    "arsenal": {
+        "id": 57,
+        "name": "Arsenal FC",
+        "slug": "arsenal",
+        "crest": "https://crests.football-data.org/57.png",
+    },
+}
+
+FEATURED = {
     "champions-league": {
         "name": "Champions League",
         "slug": "champions-league",
         "crest": "https://crests.football-data.org/CL.png",
         "provider": "competition",
         "competition_code": "CL",
+        "subtitle": "For Champions League lovers",
     },
     "important-games": {
         "name": "Important Games",
         "slug": "important-games",
         "crest": "https://img.icons8.com/color/512/trophy.png",
         "provider": "important",
+        "subtitle": "For those who just love soccer",
     },
 }
 
