@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: soccalendar
-    runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
-    plan: free
-    autoDeploy: true
