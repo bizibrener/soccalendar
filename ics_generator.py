@@ -11,7 +11,6 @@ def generate_ics(matches: List[Dict], team_name: str) -> str:
     cal.add("prodid", "-//Soccalendar//EN")
     cal.add("version", "2.0")
     cal.add("x-wr-calname", f"{team_name} Matches")
-    cal.add("x-wr-timezone", "UTC")
     cal.add("method", "PUBLISH")
     cal.add("refresh-interval;value=duration", "PT12H")
     cal.add("x-published-ttl", "PT12H")

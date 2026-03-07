@@ -860,24 +860,35 @@
             return ov;
         }
 
-        function renderOverlay(ov, slug, data) {
-            const loading = ov.querySelector('.overlay-loading');
-            const content = ov.querySelector('.overlay-content');
+        function formatLocal(utc) {
+            const d = new Date(utc);
+            const date = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            const time = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
+            return { date, time };
+        }
 
+        function buildMatchesHtml(data, slug) {
             let html = '<div class="overlay-title">Upcoming</div>';
             if (data.length === 0) {
                 html += '<div class="no-matches">No upcoming matches</div>';
             } else {
                 data.forEach(m => {
+                    const { date, time } = formatLocal(m.utc);
                     html += `<div class="match-row">
-                        <span class="match-date">${m.date}</span>
+                        <span class="match-date">${date}</span>
                         <span class="match-teams">${m.home} vs ${m.away}</span>
-                        <span class="match-time">${m.time}</span>
+                        <span class="match-time">${time}</span>
                     </div>`;
                 });
             }
             html += `<a class="overlay-subscribe" href="/team/${slug}">Subscribe →</a>`;
-            content.innerHTML = html;
+            return html;
+        }
+
+        function renderOverlay(ov, slug, data) {
+            const loading = ov.querySelector('.overlay-loading');
+            const content = ov.querySelector('.overlay-content');
+            content.innerHTML = buildMatchesHtml(data, slug);
 
             loading.classList.add('fade-out');
             setTimeout(() => {
@@ -889,20 +900,7 @@
 
         function renderOverlayInstant(ov, slug, data) {
             const content = ov.querySelector('.overlay-content');
-            let html = '<div class="overlay-title">Upcoming</div>';
-            if (data.length === 0) {
-                html += '<div class="no-matches">No upcoming matches</div>';
-            } else {
-                data.forEach(m => {
-                    html += `<div class="match-row">
-                        <span class="match-date">${m.date}</span>
-                        <span class="match-teams">${m.home} vs ${m.away}</span>
-                        <span class="match-time">${m.time}</span>
-                    </div>`;
-                });
-            }
-            html += `<a class="overlay-subscribe" href="/team/${slug}">Subscribe →</a>`;
-            content.innerHTML = html;
+            content.innerHTML = buildMatchesHtml(data, slug);
             content.style.display = '';
             requestAnimationFrame(() => content.classList.add('show'));
         }

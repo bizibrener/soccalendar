@@ -78,8 +78,7 @@ def upcoming_matches(slug):
         result.append({
             "home": m["home_team"],
             "away": m["away_team"],
-            "date": m["start_time"].strftime("%b %d"),
-            "time": m["start_time"].strftime("%H:%M"),
+            "utc": m["start_time"].isoformat(),
             "status": m.get("status", ""),
         })
 
