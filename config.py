@@ -14,6 +14,24 @@ TEAMS = {
         "slug": "real-madrid",
         "crest": "https://crests.football-data.org/86.png",
     },
+    "liverpool": {
+        "id": 64,
+        "name": "Liverpool FC",
+        "slug": "liverpool",
+        "crest": "https://crests.football-data.org/64.png",
+    },
+    "manchester-united": {
+        "id": 66,
+        "name": "Manchester United FC",
+        "slug": "manchester-united",
+        "crest": "https://crests.football-data.org/66.png",
+    },
+    "manchester-city": {
+        "id": 65,
+        "name": "Manchester City FC",
+        "slug": "manchester-city",
+        "crest": "https://crests.football-data.org/65.png",
+    },
 }
 
 MATCH_DURATION_HOURS = 2
