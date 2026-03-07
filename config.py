@@ -6,6 +6,7 @@ TEAMS = {
         "id": 81,
         "name": "FC Barcelona",
         "slug": "barcelona",
+        "crest": "https://crests.football-data.org/81.png",
     },
 }
 

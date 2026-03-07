@@ -1,4 +1,4 @@
-from flask import Flask, Response
+from flask import Flask, Response, render_template
 from providers.barcelona import fetch_barcelona_matches
 from ics_generator import generate_ics
 from config import TEAMS
@@ -8,20 +8,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    team_links = "".join(
-        f'<li><a href="/calendar/{slug}">{info["name"]}</a></li>'
-        for slug, info in TEAMS.items()
-    )
-    return f"""
-    <html>
-    <head><title>Soccalendar</title></head>
-    <body>
-        <h1>Soccalendar</h1>
-        <p>Subscribe to soccer team calendars:</p>
-        <ul>{team_links}</ul>
-    </body>
-    </html>
-    """
+    return render_template("index.html", teams=TEAMS)
 
 
 PROVIDERS = {

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soccalendar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #0a0f1a;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .field-lines {
+            position: fixed;
+            inset: 0;
+            opacity: 0.03;
+            background:
+                linear-gradient(90deg, transparent 49.5%, #fff 49.5%, #fff 50.5%, transparent 50.5%),
+                radial-gradient(circle at 50% 50%, transparent 18%, #fff 18%, #fff 18.5%, transparent 18.5%);
+            background-size: 100% 100%;
+            pointer-events: none;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px 20px;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        header p {
+            margin-top: 12px;
+            font-size: 1.15rem;
+            color: #8892a4;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .teams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 0 24px;
+        }
+
+        .team-card {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            height: 180px;
+            display: flex;
+            align-items: flex-end;
+            text-decoration: none;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            cursor: pointer;
+        }
+
+        .team-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .team-card .bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .team-card .crest {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 120px;
+            height: 120px;
+            opacity: 0.15;
+            object-fit: contain;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .team-card .info {
+            position: relative;
+            z-index: 2;
+            padding: 20px 24px;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+        }
+
+        .team-card .team-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .team-card .subscribe-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 4px;
+        }
+
+        .barcelona .bg {
+            background: linear-gradient(135deg, #a50044 0%, #004d98 100%);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #4a5568;
+            font-size: 0.85rem;
+        }
+
+        .how-to {
+            max-width: 560px;
+            margin: 0 auto 30px;
+            padding: 0 24px;
+            text-align: center;
+        }
+
+        .how-to h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #cbd5e0;
+            margin-bottom: 12px;
+        }
+
+        .how-to ol {
+            list-style: none;
+            counter-reset: steps;
+            text-align: left;
+            display: inline-block;
+        }
+
+        .how-to ol li {
+            counter-increment: steps;
+            color: #8892a4;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            padding-left: 32px;
+            position: relative;
+        }
+
+        .how-to ol li::before {
+            content: counter(steps);
+            position: absolute;
+            left: 0;
+            width: 22px;
+            height: 22px;
+            background: rgba(67, 233, 123, 0.15);
+            color: #43e97b;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="field-lines"></div>
+
+    <header>
+        <h1>Soccalendar</h1>
+        <p>Subscribe to your favorite team's match calendar. Never miss a game again.</p>
+    </header>
+
+    <div class="teams-grid">
+        {% for slug, team in teams.items() %}
+        <a class="team-card {{ slug }}" href="/calendar/{{ slug }}">
+            <div class="bg"></div>
+            <img class="crest" src="{{ team.crest }}" alt="{{ team.name }}">
+            <div class="info">
+                <div class="team-name">{{ team.name }}</div>
+                <div class="subscribe-label">Tap to subscribe to calendar</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="how-to">
+        <h2>How does it work?</h2>
+        <ol>
+            <li>Click a team card above</li>
+            <li>Copy the URL from your browser</li>
+            <li>In Google Calendar → Other calendars → From URL</li>
+            <li>Paste the link and subscribe — games auto-update!</li>
+        </ol>
+    </div>
+
+    <footer>
+        Soccalendar &mdash; open source soccer calendars
+    </footer>
+</body>
+</html>
