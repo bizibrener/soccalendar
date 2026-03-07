@@ -149,17 +149,17 @@
     <div class="subscribe-section">
         <h2>Pick your calendar app</h2>
 
-        <a class="btn btn-google" href="https://calendar.google.com/calendar/render?cid={{ webcal_url }}">
+        <a class="btn btn-google" href="https://calendar.google.com/calendar/render?cid={{ webcal_url }}" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" fill="#4285F4"/><path d="M12 7v5l3.5 2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
             Google Calendar
         </a>
 
-        <a class="btn btn-apple" href="{{ webcal_url }}">
+        <a class="btn btn-apple" href="{{ webcal_url }}" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" fill="#555"/><path d="M12 7v5l3.5 2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
             Apple Calendar
         </a>
 
-        <a class="btn btn-outlook" href="https://outlook.live.com/owa/?rru=addsubscription&name={{ team.name | urlencode }}&url={{ webcal_url | urlencode }}">
+        <a class="btn btn-outlook" href="https://outlook.live.com/owa/?rru=addsubscription&name={{ team.name | urlencode }}&url={{ webcal_url | urlencode }}" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" fill="#0078D4"/><path d="M12 7v5l3.5 2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
             Outlook
         </a>

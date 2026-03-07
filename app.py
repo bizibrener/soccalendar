@@ -2,6 +2,7 @@ from flask import Flask, Response, render_template, request
 from providers.fetch_matches import fetch_team_matches
 from providers.fetch_important import fetch_important_matches
 from providers.fetch_competition import fetch_competition_matches
+from providers.fetch_thesportsdb import fetch_thesportsdb_league, fetch_thesportsdb_team
 from ics_generator import generate_ics
 from config import TEAMS, FEATURED, LEAGUES
 
@@ -18,6 +19,10 @@ def get_matches(slug):
         return fetch_important_matches()
     elif provider == "competition":
         return fetch_competition_matches(cal["competition_code"])
+    elif provider == "thesportsdb_league":
+        return fetch_thesportsdb_league(cal["thesportsdb_league_id"], cal["thesportsdb_season"])
+    elif provider == "thesportsdb_team":
+        return fetch_thesportsdb_team(cal["name"], cal["thesportsdb_league_id"], cal["thesportsdb_season"])
     else:
         return fetch_team_matches(slug)
 
