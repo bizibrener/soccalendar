@@ -201,3 +201,24 @@ LEAGUES = {
 
 MATCH_DURATION_HOURS = 2
 CALENDAR_DAYS_AHEAD = 14
+CALENDAR_DAYS_BEHIND = 2
+
+# API-Football (api-sports.io) — used for post-match stats
+API_FOOTBALL_KEY = "9e37aa73a033f54b5dfebafc0b8b56fc"
+API_FOOTBALL_BASE = "https://v3.football.api-sports.io"
+
+# Map football-data.org competition codes to API-Football league IDs
+COMPETITION_TO_APIFOOTBALL = {
+    "PL": 39,       # Premier League
+    "PD": 140,      # La Liga
+    "BL1": 78,      # Bundesliga
+    "SA": 135,       # Serie A
+    "FL1": 61,       # Ligue 1
+    "CL": 2,         # Champions League
+    "Primera Division": 140,
+    "Premier League": 39,
+    "Bundesliga": 78,
+    "Serie A": 135,
+    "Ligue 1": 61,
+    "UEFA Champions League": 2,
+}

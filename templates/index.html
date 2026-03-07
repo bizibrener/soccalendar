@@ -57,13 +57,62 @@
             margin-right: auto;
         }
 
-        .section-title {
+        .section-header {
             max-width: 900px;
             margin: 40px auto 0;
             padding: 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .section-title {
             font-size: 1.3rem;
             font-weight: 600;
             color: #cbd5e0;
+        }
+
+        .section-toggle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, border-color 0.2s ease;
+        }
+
+        .section-toggle svg {
+            width: 12px;
+            height: 12px;
+            fill: none;
+            stroke: #8892a4;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .section-header:hover .section-toggle {
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .section-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .collapsible {
+            overflow: hidden;
+            max-height: 2000px;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            opacity: 1;
+        }
+
+        .collapsible.collapsed {
+            max-height: 0;
+            opacity: 0;
         }
 
         /* --- SHARED CARD STYLES --- */
@@ -391,43 +440,53 @@
     </div>
 
     <!-- LEAGUES -->
-    <h2 class="section-title">Leagues</h2>
+    <div class="section-header" data-target="leagues-section">
+        <h2 class="section-title">Leagues</h2>
+        <span class="section-toggle"><svg viewBox="0 0 12 12"><polyline points="2,4 6,8 10,4"/></svg></span>
+    </div>
 
-    <div class="card-grid">
-        {% for slug, league in leagues.items() %}
-        <a class="card league-card {{ slug }}" href="/team/{{ slug }}">
-            <div class="flag-bg"></div>
-            <div class="bg"></div>
-            <img class="crest" src="{{ league.crest }}" alt="{{ league.name }}">
-            <div class="info">
-                <div class="card-name">{{ league.name }}</div>
-                <div class="subtitle">{{ league.subtitle }}</div>
-            </div>
-        </a>
-        {% endfor %}
+    <div class="collapsible" id="leagues-section">
+        <div class="card-grid">
+            {% for slug, league in leagues.items() %}
+            <a class="card league-card {{ slug }}" href="/team/{{ slug }}">
+                <div class="flag-bg"></div>
+                <div class="bg"></div>
+                <img class="crest" src="{{ league.crest }}" alt="{{ league.name }}">
+                <div class="info">
+                    <div class="card-name">{{ league.name }}</div>
+                    <div class="subtitle">{{ league.subtitle }}</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
     </div>
 
     <!-- TEAMS -->
-    <h2 class="section-title">Teams</h2>
-
-    <div class="filter-bar">
-        <button class="filter-btn active" data-league="all">All</button>
-        {% for slug, league in leagues.items() %}
-        <button class="filter-btn" data-league="{{ slug }}">{{ league.name }}</button>
-        {% endfor %}
+    <div class="section-header" data-target="teams-section">
+        <h2 class="section-title">Teams</h2>
+        <span class="section-toggle"><svg viewBox="0 0 12 12"><polyline points="2,4 6,8 10,4"/></svg></span>
     </div>
 
-    <div class="card-grid" id="teams-grid">
-        {% for slug, team in teams.items() %}
-        <a class="card team-card-wrap {{ slug }}" href="/team/{{ slug }}" data-league="{{ team.league }}">
-            <div class="bg"></div>
-            <img class="crest" src="{{ team.crest }}" alt="{{ team.name }}">
-            <div class="info">
-                <div class="card-name">{{ team.name }}</div>
-                <div class="subscribe-label">Tap to subscribe to calendar</div>
-            </div>
-        </a>
-        {% endfor %}
+    <div class="collapsible" id="teams-section">
+        <div class="filter-bar">
+            <button class="filter-btn active" data-league="all">All</button>
+            {% for slug, league in leagues.items() %}
+            <button class="filter-btn" data-league="{{ slug }}">{{ league.name }}</button>
+            {% endfor %}
+        </div>
+
+        <div class="card-grid" id="teams-grid">
+            {% for slug, team in teams.items() %}
+            <a class="card team-card-wrap {{ slug }}" href="/team/{{ slug }}" data-league="{{ team.league }}">
+                <div class="bg"></div>
+                <img class="crest" src="{{ team.crest }}" alt="{{ team.name }}">
+                <div class="info">
+                    <div class="card-name">{{ team.name }}</div>
+                    <div class="subscribe-label">Tap to subscribe to calendar</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
     </div>
 
     <div class="how-to">
@@ -445,8 +504,19 @@
     </footer>
 
     <script>
+        document.querySelectorAll('.section-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const targetId = header.dataset.target;
+                const section = document.getElementById(targetId);
+                const arrow = header.querySelector('.section-toggle');
+                section.classList.toggle('collapsed');
+                arrow.classList.toggle('collapsed');
+            });
+        });
+
         document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
 

@@ -3,6 +3,7 @@ import hashlib
 from typing import List, Dict
 from icalendar import Calendar, Event
 from config import MATCH_DURATION_HOURS
+from providers.fetch_stats import fetch_match_stats, format_stats_description
 
 
 def generate_ics(matches: List[Dict], team_name: str) -> str:
@@ -17,8 +18,15 @@ def generate_ics(matches: List[Dict], team_name: str) -> str:
 
     for match in matches:
         event = Event()
+        home = match["home_team"]
+        away = match["away_team"]
+        is_finished = match.get("status") == "FINISHED"
 
-        summary = f"{match['home_team']} vs {match['away_team']}"
+        summary = f"{home} vs {away}"
+        if is_finished:
+            sh = match.get("score_home", "?")
+            sa = match.get("score_away", "?")
+            summary = f"{home} {sh} - {sa} {away}"
         if match.get("competition"):
             summary += f" ({match['competition']})"
 
@@ -26,7 +34,14 @@ def generate_ics(matches: List[Dict], team_name: str) -> str:
         event.add("dtstart", match["start_time"])
         event.add("dtend", match["start_time"] + datetime.timedelta(hours=MATCH_DURATION_HOURS))
 
-        uid_source = f"{match['home_team']}-{match['away_team']}-{match['start_time'].isoformat()}"
+        if is_finished:
+            stats = fetch_match_stats(home, away, match["start_time"],
+                                      match.get("competition", ""))
+            description = format_stats_description(stats, home, away)
+            if description:
+                event.add("description", description)
+
+        uid_source = f"{home}-{away}-{match['start_time'].isoformat()}"
         uid = hashlib.md5(uid_source.encode()).hexdigest() + "@soccalendar"
         event.add("uid", uid)
 

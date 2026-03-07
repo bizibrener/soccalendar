@@ -1,7 +1,7 @@
 import requests
 import datetime
 from typing import List, Dict
-from config import API_KEY, BASE_URL, CALENDAR_DAYS_AHEAD
+from config import API_KEY, BASE_URL, CALENDAR_DAYS_AHEAD, CALENDAR_DAYS_BEHIND
 
 TEAM_RANKINGS = {
     "FC Barcelona": 4,
@@ -43,10 +43,11 @@ def _fetch_matches_for_range(date_from, date_to) -> List[Dict]:
 
 def fetch_important_matches() -> List[Dict]:
     today = datetime.date.today()
+    start_date = today - datetime.timedelta(days=CALENDAR_DAYS_BEHIND)
     end_date = today + datetime.timedelta(days=CALENDAR_DAYS_AHEAD)
 
     all_raw = []
-    cursor = today
+    cursor = start_date
     while cursor < end_date:
         chunk_end = min(cursor + datetime.timedelta(days=MAX_API_RANGE_DAYS), end_date)
         all_raw.extend(_fetch_matches_for_range(cursor, chunk_end))
@@ -74,11 +75,22 @@ def fetch_important_matches() -> List[Dict]:
             utc_date.replace("Z", "+00:00")
         )
 
-        matches.append({
+        status = match.get("status", "")
+        score = match.get("score", {})
+
+        match_data = {
             "home_team": home,
             "away_team": away,
             "start_time": start_time,
             "competition": competition,
-        })
+            "status": status,
+        }
+
+        if status == "FINISHED":
+            ft = score.get("fullTime", {})
+            match_data["score_home"] = ft.get("home")
+            match_data["score_away"] = ft.get("away")
+
+        matches.append(match_data)
 
     return matches

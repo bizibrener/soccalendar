@@ -1,20 +1,20 @@
 import requests
 import datetime
 from typing import List, Dict
-from config import API_KEY, BASE_URL, CALENDAR_DAYS_AHEAD
+from config import API_KEY, BASE_URL, CALENDAR_DAYS_AHEAD, CALENDAR_DAYS_BEHIND
 
 
 def fetch_competition_matches(competition_code: str) -> List[Dict]:
     url = f"{BASE_URL}/competitions/{competition_code}/matches"
 
     today = datetime.date.today()
+    date_from = today - datetime.timedelta(days=CALENDAR_DAYS_BEHIND)
     date_to = today + datetime.timedelta(days=CALENDAR_DAYS_AHEAD)
 
     headers = {"X-Auth-Token": API_KEY}
     params = {
-        "dateFrom": today.strftime("%Y-%m-%d"),
+        "dateFrom": date_from.strftime("%Y-%m-%d"),
         "dateTo": date_to.strftime("%Y-%m-%d"),
-        "status": "SCHEDULED,TIMED",
     }
 
     try:
@@ -30,6 +30,8 @@ def fetch_competition_matches(competition_code: str) -> List[Dict]:
         home = match.get("homeTeam", {}).get("name", "Unknown")
         away = match.get("awayTeam", {}).get("name", "Unknown")
         utc_date = match.get("utcDate", "")
+        status = match.get("status", "")
+        score = match.get("score", {})
 
         if not utc_date:
             continue
@@ -38,11 +40,19 @@ def fetch_competition_matches(competition_code: str) -> List[Dict]:
             utc_date.replace("Z", "+00:00")
         )
 
-        matches.append({
+        match_data = {
             "home_team": home,
             "away_team": away,
             "start_time": start_time,
             "competition": competition_code,
-        })
+            "status": status,
+        }
+
+        if status == "FINISHED":
+            ft = score.get("fullTime", {})
+            match_data["score_home"] = ft.get("home")
+            match_data["score_away"] = ft.get("away")
+
+        matches.append(match_data)
 
     return matches
