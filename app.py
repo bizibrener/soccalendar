@@ -3,11 +3,11 @@ from providers.fetch_matches import fetch_team_matches
 from providers.fetch_important import fetch_important_matches
 from providers.fetch_competition import fetch_competition_matches
 from ics_generator import generate_ics
-from config import TEAMS, FEATURED
+from config import TEAMS, FEATURED, LEAGUES
 
 app = Flask(__name__)
 
-ALL_CALENDARS = {**FEATURED, **TEAMS}
+ALL_CALENDARS = {**FEATURED, **LEAGUES, **TEAMS}
 
 
 def get_matches(slug):
@@ -24,7 +24,7 @@ def get_matches(slug):
 
 @app.route("/")
 def index():
-    return render_template("index.html", featured=FEATURED, teams=TEAMS)
+    return render_template("index.html", featured=FEATURED, leagues=LEAGUES, teams=TEAMS)
 
 
 @app.route("/team/<team_slug>")
