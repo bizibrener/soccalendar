@@ -405,6 +405,109 @@
             display: none;
         }
 
+        /* --- UPCOMING TOOLTIP --- */
+        .card {
+            position: relative;
+        }
+
+        .upcoming-tooltip {
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translate(-50%, 100%);
+            z-index: 100;
+            background: #151b2e;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px 16px;
+            min-width: 260px;
+            max-width: 320px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translate(-50%, calc(100% + 4px));
+        }
+
+        .upcoming-tooltip.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, 100%);
+        }
+
+        .upcoming-tooltip .tooltip-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #5a6478;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .upcoming-tooltip .match-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .upcoming-tooltip .match-row:last-child {
+            border-bottom: none;
+        }
+
+        .upcoming-tooltip .match-date {
+            font-size: 0.75rem;
+            color: #43e97b;
+            font-weight: 600;
+            min-width: 48px;
+            text-align: center;
+        }
+
+        .upcoming-tooltip .match-teams {
+            font-size: 0.82rem;
+            color: #cbd5e0;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .upcoming-tooltip .match-time {
+            font-size: 0.72rem;
+            color: #5a6478;
+        }
+
+        .upcoming-tooltip .no-matches {
+            font-size: 0.82rem;
+            color: #5a6478;
+            text-align: center;
+            padding: 4px 0;
+        }
+
+        .upcoming-tooltip .tooltip-subscribe {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            background: rgba(67, 233, 123, 0.1);
+            color: #43e97b;
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .upcoming-tooltip .tooltip-subscribe:hover {
+            background: rgba(67, 233, 123, 0.18);
+        }
+
+        .upcoming-tooltip .tooltip-loading {
+            text-align: center;
+            padding: 8px 0;
+            color: #5a6478;
+            font-size: 0.8rem;
+        }
+
         /* --- HOW TO --- */
         .how-to {
             max-width: 560px;
@@ -573,6 +676,109 @@
                 });
             });
         });
+
+        /* --- Upcoming matches tooltip --- */
+        const cache = {};
+        const isMobile = 'ontouchstart' in window;
+        let activeTooltip = null;
+
+        function getSlug(card) {
+            const href = card.getAttribute('href') || '';
+            return href.replace('/team/', '');
+        }
+
+        function createTooltip(card, slug) {
+            let tip = card.querySelector('.upcoming-tooltip');
+            if (tip) return tip;
+
+            tip = document.createElement('div');
+            tip.className = 'upcoming-tooltip';
+            tip.innerHTML = '<div class="tooltip-loading">Loading...</div>';
+            card.appendChild(tip);
+            return tip;
+        }
+
+        function renderTooltip(tip, slug, data) {
+            let html = '<div class="tooltip-title">Upcoming</div>';
+            if (data.length === 0) {
+                html += '<div class="no-matches">No upcoming matches</div>';
+            } else {
+                data.forEach(m => {
+                    html += `<div class="match-row">
+                        <span class="match-date">${m.date}</span>
+                        <span class="match-teams">${m.home} vs ${m.away}</span>
+                        <span class="match-time">${m.time}</span>
+                    </div>`;
+                });
+            }
+            html += `<a class="tooltip-subscribe" href="/team/${slug}">Subscribe →</a>`;
+            tip.innerHTML = html;
+        }
+
+        async function fetchUpcoming(slug) {
+            if (cache[slug]) return cache[slug];
+            try {
+                const res = await fetch(`/api/upcoming/${slug}`);
+                const data = await res.json();
+                cache[slug] = data;
+                return data;
+            } catch { return []; }
+        }
+
+        function showTooltip(card) {
+            const slug = getSlug(card);
+            if (!slug) return;
+
+            if (activeTooltip && activeTooltip !== card) {
+                hideTooltip(activeTooltip);
+            }
+
+            const tip = createTooltip(card, slug);
+            tip.classList.add('visible');
+            activeTooltip = card;
+
+            fetchUpcoming(slug).then(data => {
+                renderTooltip(tip, slug, data);
+            });
+        }
+
+        function hideTooltip(card) {
+            const tip = card.querySelector('.upcoming-tooltip');
+            if (tip) tip.classList.remove('visible');
+            if (activeTooltip === card) activeTooltip = null;
+        }
+
+        document.querySelectorAll('.card').forEach(card => {
+            if (!card.getAttribute('href')) return;
+
+            if (!isMobile) {
+                let hoverTimeout;
+                card.addEventListener('mouseenter', () => {
+                    hoverTimeout = setTimeout(() => showTooltip(card), 300);
+                });
+                card.addEventListener('mouseleave', () => {
+                    clearTimeout(hoverTimeout);
+                    hideTooltip(card);
+                });
+            }
+
+            if (isMobile) {
+                card.addEventListener('click', (e) => {
+                    const tip = card.querySelector('.upcoming-tooltip');
+                    if (tip && tip.classList.contains('visible')) return;
+                    e.preventDefault();
+                    showTooltip(card);
+                });
+            }
+        });
+
+        if (isMobile) {
+            document.addEventListener('click', (e) => {
+                if (activeTooltip && !activeTooltip.contains(e.target)) {
+                    hideTooltip(activeTooltip);
+                }
+            });
+        }
     </script>
 </body>
 </html>

@@ -1,4 +1,5 @@
-from flask import Flask, Response, render_template, request
+from flask import Flask, Response, render_template, request, jsonify
+import datetime
 from providers.fetch_matches import fetch_team_matches
 from providers.fetch_important import fetch_important_matches
 from providers.fetch_competition import fetch_competition_matches
@@ -56,6 +57,33 @@ def team_calendar(team_slug):
     ics_content = generate_ics(matches, team["name"])
 
     return Response(ics_content, mimetype="text/calendar")
+
+
+@app.route("/api/upcoming/<slug>")
+def upcoming_matches(slug):
+    if slug not in ALL_CALENDARS:
+        return jsonify([])
+
+    try:
+        matches = get_matches(slug)
+    except Exception:
+        return jsonify([])
+
+    now = datetime.datetime.now(datetime.timezone.utc)
+    upcoming = [m for m in matches if m["start_time"] >= now and m.get("status") != "FINISHED"]
+    upcoming.sort(key=lambda m: m["start_time"])
+
+    result = []
+    for m in upcoming[:3]:
+        result.append({
+            "home": m["home_team"],
+            "away": m["away_team"],
+            "date": m["start_time"].strftime("%b %d"),
+            "time": m["start_time"].strftime("%H:%M"),
+            "status": m.get("status", ""),
+        })
+
+    return jsonify(result)
 
 
 if __name__ == "__main__":
