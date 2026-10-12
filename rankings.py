@@ -30,3 +30,15 @@ TEAM_WEIGHTS = {
 THRESHOLD = 4      # sum of both teams' weights must be >= this
 DAYS_AHEAD = 14    # how far into the future the calendar looks
 DAYS_BEHIND = 0    # include recently finished games (0 = forward-looking only)
+
+# Competitions ignored entirely (exact names as returned by football-data.org).
+EXCLUDED_COMPETITIONS = {
+    "Serie A",                        # "i hate italian league lol"
+    "Campeonato Brasileiro Série A",  # "out out out"
+    "Copa Libertadores",
+}
+
+# Some competitions are "one notch easier": lower the threshold by this much, but ONLY
+# when both teams are rated (>=1), so a giant vs a no-name (e.g. LASK Linz vs Liverpool)
+# doesn't sneak in.
+COMPETITION_BONUS = {"UEFA Champions League": 1}

@@ -77,7 +77,12 @@ kickoff notifications, we add a small reminder path (or you set one rule in Cale
 
 ## Status
 Branch `personal-refactor` implements all of the above. Verified locally: `build.py` fetches
-and writes 10 matches for the current window. Not yet merged/pushed.
+and writes 11 matches for the current window. Not yet merged/pushed.
+
+### Selection rule (after the taste game)
+`weight(home) + weight(away) >= 4`, minus `EXCLUDED_COMPETITIONS` (Serie A, Brasileirão,
+Copa Libertadores), plus a UCL bonus of 1 that applies only when both teams are rated.
+Fits 29/29 of the owner's gut calls. Barca + Real are weight 4 → always in (owner is a Barca fan).
 
 ### Remaining manual go-live steps
 1. Rotate the football-data.org key (old one is in git history + the sister repo).

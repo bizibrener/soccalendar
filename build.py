@@ -9,7 +9,10 @@ import os
 
 from icalendar import Calendar, Event
 
-from rankings import TEAM_WEIGHTS, THRESHOLD, DAYS_AHEAD, DAYS_BEHIND
+from rankings import (
+    TEAM_WEIGHTS, THRESHOLD, DAYS_AHEAD, DAYS_BEHIND,
+    EXCLUDED_COMPETITIONS, COMPETITION_BONUS,
+)
 from providers.football_data import fetch_matches
 
 OUT_PATH = os.path.join(os.path.dirname(__file__), "docs", "calendar.ics")
@@ -22,7 +25,13 @@ def _weight(team_id) -> int:
 
 
 def _is_good(m) -> bool:
-    return _weight(m["home_id"]) + _weight(m["away_id"]) >= THRESHOLD
+    if m["competition"] in EXCLUDED_COMPETITIONS:
+        return False
+    home, away = _weight(m["home_id"]), _weight(m["away_id"])
+    threshold = THRESHOLD
+    if m["competition"] in COMPETITION_BONUS and home > 0 and away > 0:
+        threshold -= COMPETITION_BONUS[m["competition"]]
+    return home + away >= threshold
 
 
 def _summary(m) -> str:

@@ -14,10 +14,16 @@ build.py                      # filter by rating -> docs/calendar.ics
 docs/calendar.ics             # the generated feed (served by GitHub Pages)
 ```
 
-### Selection rule
-A match is included when `weight(home) + weight(away) >= THRESHOLD` (default 4).
-Weights live in `rankings.py`, keyed by **football-data team ID** (not name — names caused
-teams to silently disappear). Two unranked teams are never included.
+### Selection rule (a heuristic — tuned to taste, not exact)
+A match is included when `weight(home) + weight(away) >= 4`, where the weights live in
+`rankings.py`, keyed by **football-data team ID** (not name — names caused teams to silently
+disappear). Two refinements, also in `rankings.py`:
+
+- `EXCLUDED_COMPETITIONS` — never shown (Serie A, Brasileirão, Copa Libertadores).
+- `COMPETITION_BONUS` — the Champions League is "one notch easier", but **only between two rated
+  clubs**, so a giant vs a no-name (LASK Linz vs Liverpool) doesn't sneak in.
+
+Barcelona and Real Madrid are weight 4, so every one of their games is always in.
 
 ## Run locally
 

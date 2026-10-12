@@ -20,6 +20,12 @@ See `PLAN.md` for the decision history.
 but **keyed by team ID instead of name** — the old name-keyed version silently dropped Atlético
 ("Atlético de Madrid" ≠ API's "Club Atlético de Madrid"). PSG added at weight 3.
 
+Two refinements, both in `rankings.py` (see PLAN.md for the "game" that produced them):
+- `EXCLUDED_COMPETITIONS` = {Serie A, Brasileirão, Copa Libertadores} (owner's taste).
+- `COMPETITION_BONUS`: UCL threshold drops by 1, but only when **both** teams are rated.
+This is a deliberate heuristic, not a precise model — owner is fine with occasional misses
+(e.g. Napoli–Liverpool is dropped, which he accepted). Don't over-fit it.
+
 ## Run locally
 ```bash
 cd ~/myRepos/soccalendar
