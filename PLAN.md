@@ -75,17 +75,22 @@ kickoff notifications, we add a small reminder path (or you set one rule in Cale
 - [x] **Repo visibility** → **public** (rotate the leaked API key first).
 - [x] **Window length** → **14 days**.
 
-## Status
-Branch `personal-refactor` implements all of the above. Verified locally: `build.py` fetches
-and writes 11 matches for the current window. Not yet merged/pushed.
+## Status — SHIPPED & LIVE (2026-10-12)
+Merged to `main`. Repo is public. GitHub Pages enabled (`main` / `/docs`). Actions secret
+`FOOTBALL_DATA_KEY` set. Daily workflow runs and commits `docs/calendar.ics`.
+
+- **Feed:** https://bizibrener.github.io/soccalendar/calendar.ics (verified: `text/calendar`, 11 events)
+- **Subscribe page:** https://bizibrener.github.io/soccalendar/
+- **Google Calendar:** Other calendars → "+" → **From URL** → paste the feed URL.
 
 ### Selection rule (after the taste game)
 `weight(home) + weight(away) >= 4`, minus `EXCLUDED_COMPETITIONS` (Serie A, Brasileirão,
 Copa Libertadores), plus a UCL bonus of 1 that applies only when both teams are rated.
 Fits 29/29 of the owner's gut calls. Barca + Real are weight 4 → always in (owner is a Barca fan).
 
-### Remaining manual go-live steps
-1. Rotate the football-data.org key (old one is in git history + the sister repo).
-2. Add Actions secret `FOOTBALL_DATA_KEY`.
-3. Make the repo public; enable Pages (`main` / `/docs`).
-4. Merge `personal-refactor` → `main`, run the workflow, subscribe in Google Calendar.
+### Left to do (optional, not blocking)
+- Rotate the football-data.org key when convenient (it's in git history). Fastest: register a
+  fresh account (no regenerate button exists) and update the secret:
+  `gh secret set FOOTBALL_DATA_KEY --repo bizibrener/soccalendar`.
+- Maybe reduce commit churn: `DTSTAMP` changes every run, so the bot commits daily even when
+  fixtures are unchanged. Harmless; could be diffed away later.

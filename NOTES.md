@@ -8,6 +8,9 @@ A **personal** subscribable soccer calendar. Daily GitHub Action fetches matches
 Subscribe once. No UI, no users, no server.
 See `PLAN.md` for the decision history.
 
+**LIVE:** feed `https://bizibrener.github.io/soccalendar/calendar.ics` ·
+subscribe page `https://bizibrener.github.io/soccalendar/`
+
 ## Architecture (current branch `personal-refactor`)
 - `rankings.py` — `TEAM_WEIGHTS` keyed by **football-data team ID** + `THRESHOLD`, `DAYS_AHEAD/BEHIND`. **The only file to edit to change content.**
 - `providers/football_data.py` — chunked fetch of `/v4/matches` (free tier caps a query at 10 days). Reads key from env `FOOTBALL_DATA_KEY`.
